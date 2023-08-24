@@ -1,0 +1,14 @@
+[Unit]
+Description=Refresh - A second-generation custom server for LittleBigPlanet.
+Documentation=https://github.com/LittleBigRefresh/Refresh
+
+[Service]
+Type=simple
+WorkingDirectory=/var/lib/refresh/refresh
+ExecStart=/var/lib/refresh/refresh/Refresh.GameServer
+TimeoutStopSec=15
+User=refresh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
