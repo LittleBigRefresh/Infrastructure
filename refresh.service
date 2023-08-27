@@ -11,4 +11,4 @@ User=refresh
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network-online.target
