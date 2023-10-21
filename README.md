@@ -5,7 +5,7 @@ Below are some URLs relating to things we manage on our production server.
 
 ## Instances
 
-Refresh: https://refresh.jvyden.xyz
+Refresh: https://lbp.littlebigrefresh.com
 
 ## Public Grafana Dashboards
 
