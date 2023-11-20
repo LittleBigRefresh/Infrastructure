@@ -84,6 +84,13 @@ spec:
         ports:
           - containerPort: 10070
           - containerPort: 1965
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "100M"
+          limits:
+            cpu: "500m"
+            memory: "250M"
       volumes:
         - name: config
           configMap:
