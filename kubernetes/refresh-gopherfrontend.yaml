@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: refresh-gopherfrontend-config
+  namespace: refresh
+  labels:
+    app: refresh-gopherfrontend
+data:
+  "bunkum-gemini.json": "{
+      \"Version\": 4,
+      \"ExternalUrl\": \"gemini://littlebigrefresh.com:1965\",
+      \"ListenHost\": \"0.0.0.0\",
+      \"ListenPort\": 1965,
+      \"ThreadCount\": 1,
+      \"UseForwardedIp\": false
+  }
+  "
+  "bunkum-gopher.json": "{
+      \"Version\": 4,
+      \"ExternalUrl\": \"gopher://littlebigrefresh.com:70\",
+      \"ListenHost\": \"0.0.0.0\",
+      \"ListenPort\": 10070,
+      \"ThreadCount\": 4,
+      \"UseForwardedIp\": false
+  }
+  "
+  "gopherFrontend.json": "{
+      \"Version\": 1,
+      \"RefreshApiUrl\": \"https://lbp.littlebigrefresh.com/api/v3/\"
+  }
+  "
+  "geminissl.json": "{
+    \"Version\": 1,
+    \"SslCertificate\": \"/refresh/secret/cert.pfx\",
+    \"CertificatePassword\": null
+  }
+  "
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: refresh-gopherfrontend
+  namespace: refresh
+  labels:
+    app: refresh-gopherfrontend
+spec:
+  type: ClusterIP
+  selector:
+    app: refresh-gopherfrontend
+  ports:
+    - name: gopher-port
+      port: 70
+      targetPort: 10070
+      protocol: TCP
+    - name: gemini-port
+      port: 1965
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: refresh-gopherfrontend
+  namespace: refresh
+  labels:
+    app: refresh-gopherfrontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: refresh-gopherfrontend
+  template:
+    metadata:
+      labels:
+        app: refresh-gopherfrontend
+    spec:
+      containers:
+      - name: refresh-gopherfrontend
+        image: ghcr.io/littlebigrefresh/refresh.gopherfrontend:master
+        volumeMounts:
+          - mountPath: /refresh/data/
+            name: config
+          - mountPath: /refresh/secret/
+            name: secret
+        ports:
+          - containerPort: 10070
+          - containerPort: 1965
+      volumes:
+        - name: config
+          configMap:
+            name: refresh-gopherfrontend-config
+        - name: secret
+          secret:
+            secretName: refresh-gopherfrontend-cert
